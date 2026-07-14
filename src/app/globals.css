@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand palette */
+  --primary: #123b5d;
+  --primary-dark: #0b2942;
+  --primary-foreground: #ffffff;
+  --accent: #168c88;
+  --accent-soft: #e8f6f4;
+
+  /* Surfaces & text */
+  --background: #f7f9fa;
+  --foreground: #17232d;
+  --surface: #ffffff;
+  --surface-muted: #dceef7;
+  --muted-foreground: #5e6b75;
+  --border: #dce3e8;
+
+  /* Status & interaction */
+  --success: #2e7d5b;
+  --destructive: #b3261e;
+  --ring: #168c88;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-noto-sans-jp);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.7;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--primary-dark);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
