@@ -2,9 +2,10 @@
 
 import { useId, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Info } from "lucide-react";
 import ButtonLink from "@/components/ui/ButtonLink";
 import { pricingPlans } from "@/config/pricing";
+import { siteConfig } from "@/config/site";
 
 const inquiryTypeOptions = [
   "サービスについて",
@@ -14,7 +15,7 @@ const inquiryTypeOptions = [
   "その他",
 ];
 
-const desiredServiceOptions = ["特に決まっていない", ...pricingPlans.map((plan) => plan.name)];
+const serviceOptions = ["特に決まっていない", ...pricingPlans.map((plan) => plan.name)];
 
 type FormValues = {
   name: string;
@@ -22,7 +23,7 @@ type FormValues = {
   email: string;
   phone: string;
   inquiryType: string;
-  desiredService: string;
+  service: string;
   message: string;
   agree: boolean;
 };
@@ -35,7 +36,7 @@ const initialValues: FormValues = {
   email: "",
   phone: "",
   inquiryType: inquiryTypeOptions[0],
-  desiredService: desiredServiceOptions[0],
+  service: serviceOptions[0],
   message: "",
   agree: false,
 };
@@ -66,22 +67,37 @@ function validate(values: FormValues): FieldErrors {
   return errors;
 }
 
-export default function ContactForm() {
+type SubmissionStatus = "idle" | "submitting" | "success" | "error";
+
+type ContactFormProps = {
+  /**
+   * Set server-side from `Boolean(process.env.CONTACT_FORM_ENDPOINT)`. The
+   * endpoint value itself is never passed to this client component.
+   */
+  isEndpointConfigured: boolean;
+};
+
+export default function ContactForm({ isEndpointConfigured }: ContactFormProps) {
   const [values, setValues] = useState<FormValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<SubmissionStatus>("idle");
 
   const nameId = useId();
   const companyId = useId();
   const emailId = useId();
   const phoneId = useId();
   const inquiryTypeId = useId();
-  const desiredServiceId = useId();
+  const serviceId = useId();
   const messageId = useId();
   const agreeId = useId();
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    // Guard against duplicate submissions (double-click, repeated Enter).
+    if (status === "submitting") {
+      return;
+    }
 
     const nextErrors = validate(values);
     setErrors(nextErrors);
@@ -90,13 +106,43 @@ export default function ContactForm() {
       return;
     }
 
-    // 本番公開前に、実際のメール送信または安全なフォーム送信先を設定すること。
-    // 現時点では送信内容をコンポーネントのローカル状態にのみ保持し、
-    // 外部への送信・console出力・localStorageへの保存は行わない。
-    setSubmitted(true);
+    if (!isEndpointConfigured) {
+      // Handled by the disabled submit button below; this is a defensive
+      // fallback and must never claim a successful submission.
+      return;
+    }
+
+    setStatus("submitting");
+
+    try {
+      // 送信内容にはお申し込みフォームの入力値のみを含み、個人情報は
+      // console等にログ出力せず、localStorageにも保存しない。
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: values.name,
+          company: values.company,
+          email: values.email,
+          phone: values.phone,
+          inquiryType: values.inquiryType,
+          service: values.service,
+          message: values.message,
+        }),
+      });
+
+      if (!response.ok) {
+        setStatus("error");
+        return;
+      }
+
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   }
 
-  if (submitted) {
+  if (status === "success") {
     return (
       <div className="flex flex-col items-start gap-4 rounded-2xl border border-border bg-surface p-6 sm:p-8">
         <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent-soft">
@@ -115,6 +161,33 @@ export default function ContactForm() {
 
   return (
     <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-6">
+      {!isEndpointConfigured ? (
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface-muted px-5 py-4">
+          <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+          <p className="text-sm leading-[1.8] text-foreground">
+            現在、こちらのフォームからのオンライン送信には対応しておりません。
+            {siteConfig.email ? (
+              <>
+                お急ぎの場合は、
+                <a
+                  href={`mailto:${siteConfig.email}`}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  {siteConfig.email}
+                </a>
+                まで直接ご連絡ください。
+              </>
+            ) : null}
+          </p>
+        </div>
+      ) : null}
+
+      {status === "error" ? (
+        <p role="alert" className="text-sm text-destructive">
+          送信に失敗しました。時間をおいて再度お試しいただくか、上記の方法で直接ご連絡ください。
+        </p>
+      ) : null}
+
       <div className="flex flex-col gap-2">
         <label htmlFor={nameId} className="text-sm font-semibold text-foreground">
           お名前<span className="ml-1 text-destructive">必須</span>
@@ -209,18 +282,16 @@ export default function ContactForm() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor={desiredServiceId} className="text-sm font-semibold text-foreground">
+        <label htmlFor={serviceId} className="text-sm font-semibold text-foreground">
           希望サービス
         </label>
         <select
-          id={desiredServiceId}
-          value={values.desiredService}
-          onChange={(event) =>
-            setValues((prev) => ({ ...prev, desiredService: event.target.value }))
-          }
+          id={serviceId}
+          value={values.service}
+          onChange={(event) => setValues((prev) => ({ ...prev, service: event.target.value }))}
           className="w-full min-h-[44px] rounded-[10px] border border-border bg-surface px-4 text-sm text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          {desiredServiceOptions.map((option) => (
+          {serviceOptions.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
@@ -276,9 +347,10 @@ export default function ContactForm() {
 
       <button
         type="submit"
-        className="inline-flex min-h-[44px] items-center justify-center gap-2 self-start rounded-[10px] bg-primary px-6 text-sm font-semibold text-primary-foreground outline-none transition-colors duration-200 hover:bg-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        disabled={!isEndpointConfigured || status === "submitting"}
+        className="inline-flex min-h-[44px] items-center justify-center gap-2 self-start rounded-[10px] bg-primary px-6 text-sm font-semibold text-primary-foreground outline-none transition-colors duration-200 hover:bg-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
       >
-        送信する
+        {status === "submitting" ? "送信中…" : "送信する"}
       </button>
     </form>
   );

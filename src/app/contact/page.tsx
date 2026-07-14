@@ -14,7 +14,15 @@ export const metadata: Metadata = {
   alternates: canonicalFor("/contact"),
 };
 
+// Render per-request (not statically at build time) so a CONTACT_FORM_ENDPOINT
+// change takes effect without requiring a rebuild.
+export const dynamic = "force-dynamic";
+
 export default function ContactPage() {
+  // CONTACT_FORM_ENDPOINT is server-only; only a boolean flag (never the
+  // endpoint value itself) is passed down to the client form component.
+  const isContactFormEndpointConfigured = Boolean(process.env.CONTACT_FORM_ENDPOINT?.trim());
+
   return (
     <main>
       <PageHero
@@ -24,7 +32,7 @@ export default function ContactPage() {
       />
       <Section>
         <Container narrow className="flex flex-col gap-8">
-          <ContactForm />
+          <ContactForm isEndpointConfigured={isContactFormEndpointConfigured} />
           <div className="flex flex-col gap-3 border-t border-border pt-6 text-sm text-muted-foreground">
             <p>お申し込み前に、以下のページもあわせてご確認ください。</p>
             <div className="flex flex-wrap gap-4">

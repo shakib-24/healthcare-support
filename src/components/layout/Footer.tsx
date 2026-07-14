@@ -14,8 +14,25 @@ export default function Footer() {
           <p>
             {siteConfig.postalCode} {siteConfig.address}
           </p>
-          {siteConfig.phone ? <p>TEL：{siteConfig.phone}</p> : null}
-          {siteConfig.email ? <p>Email：{siteConfig.email}</p> : null}
+          {siteConfig.phone ? (
+            <p>
+              TEL：
+              <a href={`tel:${siteConfig.phone}`} className="hover:text-primary hover:underline">
+                {siteConfig.phone}
+              </a>
+            </p>
+          ) : null}
+          {siteConfig.email ? (
+            <p>
+              Email：
+              <a
+                href={`mailto:${siteConfig.email}`}
+                className="hover:text-primary hover:underline"
+              >
+                {siteConfig.email}
+              </a>
+            </p>
+          ) : null}
         </div>
         <nav aria-label="フッターナビゲーション">
           <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
