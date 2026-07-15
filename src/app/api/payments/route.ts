@@ -13,6 +13,10 @@ import {
  * Accepts only a PAY.JP token, planId, and applicant identity — never a
  * client-supplied amount. The charge/subscription amount is always resolved
  * from src/config/pricing.ts on the server.
+ *
+ * There is no database in this project. Nothing charged or subscribed here
+ * is persisted anywhere beyond PAY.JP's own dashboard — see the TODOs below
+ * for what a production integration would still need to add.
  */
 type PaymentRequestBody = {
   token: string;
@@ -50,6 +54,10 @@ async function chargeOneTimePlan(
   plan: PricingPlan,
   body: PaymentRequestBody,
 ): Promise<{ ok: true; chargeId: string }> {
+  // No database, so duplicate-submit protection for a retried checkout
+  // (double-click, dropped response) relies entirely on PAY.JP's own
+  // Idempotency-Key handling below — a repeated request with the same key
+  // returns PAY.JP's original charge instead of creating a new one.
   const charge = await createCharge({
     token: body.token,
     amount: plan.priceValue,
@@ -58,6 +66,7 @@ async function chargeOneTimePlan(
       planId: plan.id,
       applicantName: body.name,
       applicantCompany: body.company,
+      applicantEmail: body.email,
     },
     idempotencyKey: body.idempotencyKey,
   });
@@ -66,6 +75,9 @@ async function chargeOneTimePlan(
     throw new PayjpChargeNotPaidError("Charge was not confirmed as paid.");
   }
 
+  // TODO(database): once persistent storage exists, record { chargeId,
+  // planId, amount, status, email, name, company } here so payments survive
+  // beyond PAY.JP's own dashboard and can be reconciled from webhooks.
   return { ok: true, chargeId: charge.id };
 }
 
@@ -73,6 +85,10 @@ async function subscribeMonthlyPlan(
   plan: PricingPlan,
   body: PaymentRequestBody,
 ): Promise<{ ok: true; customerId: string; subscriptionId: string }> {
+  // Same caveat as chargeOneTimePlan: retry protection for this request is
+  // PAY.JP's Idempotency-Key only. Nothing here is looked up or stored
+  // locally, so there is no way to answer "does this customer already have
+  // an active subscription?" outside of PAY.JP itself.
   const customer = await createCustomer({
     token: body.token,
     email: body.email,
@@ -92,12 +108,12 @@ async function subscribeMonthlyPlan(
     idempotencyKey: body.idempotencyKey ? `${body.idempotencyKey}-sub` : undefined,
   });
 
-  // TODO(本番連携前に必須): このプロジェクトには永続データベースがない。
-  // customer.id と subscription.id をどこにも保存していないため、後から
-  // 「誰のサブスクリプションか」を照会・解約・請求失敗時のリトライ管理が
-  // できない。本番投入前に、これらのIDと申込者情報（name/company/email/
-  // planId）を永続ストア（例: Postgres, Supabase等）に保存する処理を追加し、
-  // PAY.JPのWebhook（例: 支払い失敗、解約）と突き合わせられるようにすること。
+  // TODO(database): once persistent storage exists, record the PAY.JP
+  // customer id and subscription id here. Until then, this response is the
+  // only place either id is ever visible to us — the monthly subscription
+  // is functional against PAY.JP's test mode but is NOT production-ready:
+  // there is no local record to look up, reconcile via webhook, cancel, or
+  // report on.
   return { ok: true, customerId: customer.id, subscriptionId: subscription.id };
 }
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { timingSafeEqual } from "node:crypto";
 
 /**
  * Minimal PAY.JP REST API client. Deliberately implemented with `fetch`
@@ -42,6 +43,35 @@ function authHeader(): string {
   // empty password, like the Stripe-compatible API convention it follows.
   const encoded = Buffer.from(`${getSecretKey()}:`).toString("base64");
   return `Basic ${encoded}`;
+}
+
+/**
+ * Verifies the `X-Payjp-Webhook-Token` header PAY.JP sends with every
+ * webhook request. Unlike Stripe, PAY.JP does not HMAC-sign the payload —
+ * it sends a single static, account-specific token (found in the PAY.JP
+ * dashboard under Webhook settings) and expects the receiving endpoint to
+ * check the header against that stored value. This is the officially
+ * documented verification method (https://docs.pay.jp/v1/webhook) as of
+ * this integration; there is no request-body signature to validate.
+ *
+ * Never trust a webhook request whose token does not match.
+ */
+export function verifyPayjpWebhookToken(headerValue: string | null): boolean {
+  const expected = process.env.PAYJP_WEBHOOK_SECRET;
+  if (!expected || !headerValue) {
+    return false;
+  }
+
+  const expectedBuffer = Buffer.from(expected);
+  const actualBuffer = Buffer.from(headerValue);
+
+  // timingSafeEqual throws on mismatched lengths, so compare lengths first.
+  // This leaks only the length of a public-ish token, never the request body.
+  if (expectedBuffer.length !== actualBuffer.length) {
+    return false;
+  }
+
+  return timingSafeEqual(expectedBuffer, actualBuffer);
 }
 
 type PayjpErrorBody = {

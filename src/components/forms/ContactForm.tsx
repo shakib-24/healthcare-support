@@ -2,10 +2,9 @@
 
 import { useId, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { CheckCircle2, Info } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import ButtonLink from "@/components/ui/ButtonLink";
 import { pricingPlans } from "@/config/pricing";
-import { siteConfig } from "@/config/site";
 
 const inquiryTypeOptions = [
   "サービスについて",
@@ -26,6 +25,8 @@ type FormValues = {
   service: string;
   message: string;
   agree: boolean;
+  /** Honeypot: left blank by real users, hidden from sighted and screen-reader users alike. */
+  website: string;
 };
 
 type FieldErrors = Partial<Record<keyof FormValues, string>>;
@@ -39,6 +40,7 @@ const initialValues: FormValues = {
   service: serviceOptions[0],
   message: "",
   agree: false,
+  website: "",
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -69,18 +71,20 @@ function validate(values: FormValues): FieldErrors {
 
 type SubmissionStatus = "idle" | "submitting" | "success" | "error";
 
-type ContactFormProps = {
-  /**
-   * Set server-side from `Boolean(process.env.CONTACT_FORM_ENDPOINT)`. The
-   * endpoint value itself is never passed to this client component.
-   */
-  isEndpointConfigured: boolean;
+type SubmitErrorInfo = {
+  message: string;
+  contactEmail?: string;
 };
 
-export default function ContactForm({ isEndpointConfigured }: ContactFormProps) {
+const DEFAULT_SUBMIT_ERROR: SubmitErrorInfo = {
+  message: "送信に失敗しました。時間をおいて再度お試しください。",
+};
+
+export default function ContactForm() {
   const [values, setValues] = useState<FormValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<SubmissionStatus>("idle");
+  const [submitError, setSubmitError] = useState<SubmitErrorInfo>(DEFAULT_SUBMIT_ERROR);
 
   const nameId = useId();
   const companyId = useId();
@@ -90,6 +94,7 @@ export default function ContactForm({ isEndpointConfigured }: ContactFormProps) 
   const serviceId = useId();
   const messageId = useId();
   const agreeId = useId();
+  const websiteId = useId();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,12 +108,6 @@ export default function ContactForm({ isEndpointConfigured }: ContactFormProps) 
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
-      return;
-    }
-
-    if (!isEndpointConfigured) {
-      // Handled by the disabled submit button below; this is a defensive
-      // fallback and must never claim a successful submission.
       return;
     }
 
@@ -128,16 +127,25 @@ export default function ContactForm({ isEndpointConfigured }: ContactFormProps) 
           inquiryType: values.inquiryType,
           service: values.service,
           message: values.message,
+          website: values.website,
         }),
       });
 
       if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as
+          | { error?: string; contactEmail?: string }
+          | null;
+        setSubmitError({
+          message: body?.error ?? DEFAULT_SUBMIT_ERROR.message,
+          contactEmail: body?.contactEmail,
+        });
         setStatus("error");
         return;
       }
 
       setStatus("success");
     } catch {
+      setSubmitError(DEFAULT_SUBMIT_ERROR);
       setStatus("error");
     }
   }
@@ -161,32 +169,39 @@ export default function ContactForm({ isEndpointConfigured }: ContactFormProps) 
 
   return (
     <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-6">
-      {!isEndpointConfigured ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface-muted px-5 py-4">
-          <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-          <p className="text-sm leading-[1.8] text-foreground">
-            現在、こちらのフォームからのオンライン送信には対応しておりません。
-            {siteConfig.email ? (
-              <>
-                お急ぎの場合は、
-                <a
-                  href={`mailto:${siteConfig.email}`}
-                  className="text-primary underline-offset-4 hover:underline"
-                >
-                  {siteConfig.email}
-                </a>
-                まで直接ご連絡ください。
-              </>
-            ) : null}
-          </p>
-        </div>
-      ) : null}
-
       {status === "error" ? (
         <p role="alert" className="text-sm text-destructive">
-          送信に失敗しました。時間をおいて再度お試しいただくか、上記の方法で直接ご連絡ください。
+          {submitError.message}
+          {submitError.contactEmail ? (
+            <>
+              {" "}
+              お急ぎの場合は
+              <a
+                href={`mailto:${submitError.contactEmail}`}
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                {submitError.contactEmail}
+              </a>
+              までご連絡ください。
+            </>
+          ) : null}
         </p>
       ) : null}
+
+      {/* Honeypot: invisible to sighted users and unreachable by keyboard/AT,
+          but present in the DOM for automated form-fillers to trip. */}
+      <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden">
+        <label htmlFor={websiteId}>Website</label>
+        <input
+          id={websiteId}
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={values.website}
+          onChange={(event) => setValues((prev) => ({ ...prev, website: event.target.value }))}
+        />
+      </div>
 
       <div className="flex flex-col gap-2">
         <label htmlFor={nameId} className="text-sm font-semibold text-foreground">
@@ -347,7 +362,7 @@ export default function ContactForm({ isEndpointConfigured }: ContactFormProps) 
 
       <button
         type="submit"
-        disabled={!isEndpointConfigured || status === "submitting"}
+        disabled={status === "submitting"}
         className="inline-flex min-h-[44px] items-center justify-center gap-2 self-start rounded-[10px] bg-primary px-6 text-sm font-semibold text-primary-foreground outline-none transition-colors duration-200 hover:bg-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
       >
         {status === "submitting" ? "送信中…" : "送信する"}

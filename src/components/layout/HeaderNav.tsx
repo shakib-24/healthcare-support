@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import NavLink from "@/components/layout/NavLink";
-import { mainNav } from "@/config/site";
+import { headerNav } from "@/config/site";
 
 export default function HeaderNav() {
   const pathname = usePathname();
@@ -50,7 +50,7 @@ export default function HeaderNav() {
 
       <nav aria-label="メインナビゲーション" className="hidden sm:block">
         <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-          {mainNav.map((item) => (
+          {headerNav.map((item) => (
             <li key={item.href}>
               <NavLink href={item.href}>{item.label}</NavLink>
             </li>
@@ -65,7 +65,7 @@ export default function HeaderNav() {
         className="absolute right-0 top-full z-20 mt-2 w-56 rounded-[10px] border border-border bg-surface p-2 shadow-md sm:hidden"
       >
         <ul className="flex flex-col gap-1 text-sm">
-          {mainNav.map((item) => (
+          {headerNav.map((item) => (
             <li key={item.href}>
               <NavLink
                 href={item.href}

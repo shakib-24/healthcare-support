@@ -5,7 +5,6 @@ import Section from "@/components/ui/Section";
 import Container from "@/components/ui/Container";
 import ButtonLink from "@/components/ui/ButtonLink";
 import ContactForm from "@/components/forms/ContactForm";
-import ApplicationCta from "@/components/sections/contact/ApplicationCta";
 
 export const metadata: Metadata = {
   title: "お問い合わせ・お申し込み",
@@ -14,15 +13,7 @@ export const metadata: Metadata = {
   alternates: canonicalFor("/contact"),
 };
 
-// Render per-request (not statically at build time) so a CONTACT_FORM_ENDPOINT
-// change takes effect without requiring a rebuild.
-export const dynamic = "force-dynamic";
-
 export default function ContactPage() {
-  // CONTACT_FORM_ENDPOINT is server-only; only a boolean flag (never the
-  // endpoint value itself) is passed down to the client form component.
-  const isContactFormEndpointConfigured = Boolean(process.env.CONTACT_FORM_ENDPOINT?.trim());
-
   return (
     <main>
       <PageHero
@@ -32,7 +23,7 @@ export default function ContactPage() {
       />
       <Section>
         <Container narrow className="flex flex-col gap-8">
-          <ContactForm isEndpointConfigured={isContactFormEndpointConfigured} />
+          <ContactForm />
           <div className="flex flex-col gap-3 border-t border-border pt-6 text-sm text-muted-foreground">
             <p>お申し込み前に、以下のページもあわせてご確認ください。</p>
             <div className="flex flex-wrap gap-4">
@@ -49,7 +40,6 @@ export default function ContactPage() {
           </div>
         </Container>
       </Section>
-      <ApplicationCta />
     </main>
   );
 }

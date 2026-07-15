@@ -6,7 +6,6 @@ import ChallengesSection from "@/components/sections/home/ChallengesSection";
 import ServicesSection from "@/components/sections/home/ServicesSection";
 import StrengthsSection from "@/components/sections/home/StrengthsSection";
 import ProcessSection from "@/components/sections/home/ProcessSection";
-import PricingPreviewSection from "@/components/sections/home/PricingPreviewSection";
 import CompanySection from "@/components/sections/home/CompanySection";
 import FinalCtaSection from "@/components/sections/home/FinalCtaSection";
 
@@ -26,7 +25,6 @@ export default function Home() {
       <ServicesSection />
       <StrengthsSection />
       <ProcessSection />
-      <PricingPreviewSection />
       <CompanySection />
       <FinalCtaSection />
     </main>

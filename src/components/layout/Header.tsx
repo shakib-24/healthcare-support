@@ -11,7 +11,7 @@ export default function Header() {
           href="/"
           className="rounded-sm text-base font-bold tracking-tight text-primary outline-none transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          {siteConfig.serviceName}
+          {siteConfig.companyName}
         </Link>
         <HeaderNav />
       </Container>

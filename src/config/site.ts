@@ -31,7 +31,14 @@ export const siteConfig = {
   siteUrl: rawSiteUrl && rawSiteUrl.length > 0 ? rawSiteUrl : undefined,
 } as const;
 
-export const mainNav: NavItem[] = [
+/** Header nav: kept intentionally short — legal/terms links live in the footer only. */
+export const headerNav: NavItem[] = [
+  { label: "ホーム", href: "/" },
+  { label: "サービス・料金", href: "/pricing" },
+  { label: "お問い合わせ", href: "/contact" },
+];
+
+export const footerNav: NavItem[] = [
   { label: "ホーム", href: "/" },
   { label: "サービス・料金", href: "/pricing" },
   { label: "特定商取引法に基づく表記", href: "/legal" },
