@@ -17,7 +17,7 @@ export default function FinalCtaSection() {
           <ButtonLink href="/contact" variant="secondary" icon={ArrowRight}>
             お問い合わせ・お申し込み
           </ButtonLink>
-          <ButtonLink href="/pricing" variant="outline-light">
+          <ButtonLink href="/service" variant="outline-light">
             料金プランを見る
           </ButtonLink>
         </div>

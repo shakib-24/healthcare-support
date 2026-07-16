@@ -30,7 +30,7 @@ const services: Service[] = [
       "現在の業務フローや情報管理方法を整理し、負担軽減と業務品質の向上につながる改善策をご提案します。",
     items: ["業務フローの整理", "課題・ボトルネックの可視化", "改善計画の作成", "運用ルールの見直し"],
     linkLabel: "料金プランを見る",
-    linkHref: "/pricing",
+    linkHref: "/service",
   },
   {
     icon: Globe,
@@ -39,7 +39,7 @@ const services: Service[] = [
       "Webサイトやオンラインツールの活用状況を確認し、情報発信や業務効率化につながる改善をご支援します。",
     items: ["Webサイトの改善提案", "情報発信の整理", "オンラインツールの活用支援", "デジタル業務の導入相談"],
     linkLabel: "料金プランを見る",
-    linkHref: "/pricing",
+    linkHref: "/service",
   },
   {
     icon: UserCog,
@@ -48,7 +48,7 @@ const services: Service[] = [
       "業務の属人化や情報共有の課題を整理し、スタッフが継続して運用できる仕組みづくりを支援します。",
     items: ["役割・業務分担の整理", "業務マニュアル作成支援", "社内情報共有の改善", "人材育成方針の整理"],
     linkLabel: "料金プランを見る",
-    linkHref: "/pricing",
+    linkHref: "/service",
   },
   {
     icon: HeartHandshake,

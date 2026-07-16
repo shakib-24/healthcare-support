@@ -38,8 +38,8 @@ export default function TermsOfService() {
             </p>
             <p className="mt-3 text-sm leading-[1.8] text-muted-foreground">
               サービスの詳細および料金については、
-              <Link href="/pricing" className="text-primary underline-offset-4 hover:underline">
-                サービス・料金ページ
+              <Link href="/service" className="text-primary underline-offset-4 hover:underline">
+                サービスページ
               </Link>
               に定めるとおりとします。
             </p>
@@ -55,7 +55,7 @@ export default function TermsOfService() {
           <article>
             <h3 className="text-lg font-bold text-foreground">第4条（料金および支払方法）</h3>
             <p className="mt-3 text-sm leading-[1.8] text-muted-foreground">
-              本サービスの利用料金は、サービス・料金ページに表示する金額（消費税込み）とします。お支払いはクレジットカード決済によるものとし、料金のお支払時期は各プランに定めるとおりとします。
+              本サービスの利用料金は、サービスページに表示する金額（消費税込み）とします。お支払いはクレジットカード決済によるものとし、料金のお支払時期は各プランに定めるとおりとします。
             </p>
           </article>
 

@@ -31,10 +31,10 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
         <Section>
           <Container narrow className="flex flex-col items-start gap-4">
             <p className="text-base leading-[1.8] text-muted-foreground">
-              指定されたプランが見つかりませんでした。お手数ですが、サービス・料金ページから改めてプランをお選びください。
+              指定されたプランが見つかりませんでした。お手数ですが、サービスページから改めてお申し込みください。
             </p>
-            <ButtonLink href="/pricing" variant="primary">
-              サービス・料金を見る
+            <ButtonLink href="/service" variant="primary">
+              サービスを見る
             </ButtonLink>
           </Container>
         </Section>
@@ -56,8 +56,8 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
           <div className="flex flex-col gap-3 border-t border-border pt-6 text-sm text-muted-foreground">
             <p>お申し込みにあたり、以下のページもあわせてご確認ください。</p>
             <div className="flex flex-wrap gap-4">
-              <ButtonLink href="/pricing" variant="text">
-                サービス・料金
+              <ButtonLink href="/service" variant="text">
+                サービス
               </ButtonLink>
               <ButtonLink href="/terms" variant="text">
                 利用規約・プライバシーポリシー

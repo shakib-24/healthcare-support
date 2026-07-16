@@ -29,8 +29,8 @@ export default function PaymentCancelPage() {
             決済手続きが完了していないため、お申し込みは確定していません。お手数ですが、もう一度お手続きください。ご不明な点がございましたら、お問い合わせフォームよりご連絡ください。
           </p>
           <div className="flex flex-wrap gap-4">
-            <ButtonLink href="/pricing" variant="primary">
-              サービス・料金を見る
+            <ButtonLink href="/service" variant="primary">
+              サービスを見る
             </ButtonLink>
             <ButtonLink href="/contact" variant="outline">
               お問い合わせ

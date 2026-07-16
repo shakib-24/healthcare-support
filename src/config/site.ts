@@ -34,13 +34,13 @@ export const siteConfig = {
 /** Header nav: kept intentionally short — legal/terms links live in the footer only. */
 export const headerNav: NavItem[] = [
   { label: "ホーム", href: "/" },
-  { label: "サービス・料金", href: "/pricing" },
+  { label: "サービス", href: "/service" },
   { label: "お問い合わせ", href: "/contact" },
 ];
 
 export const footerNav: NavItem[] = [
   { label: "ホーム", href: "/" },
-  { label: "サービス・料金", href: "/pricing" },
+  { label: "サービス", href: "/service" },
   { label: "特定商取引法に基づく表記", href: "/legal" },
   { label: "利用規約・プライバシーポリシー", href: "/terms" },
   { label: "お問い合わせ", href: "/contact" },

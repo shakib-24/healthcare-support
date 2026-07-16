@@ -8,7 +8,7 @@ const siteUrl = siteConfig.siteUrl ?? "http://localhost:3000";
 
 // Checkout and payment utility pages are excluded: they are not standalone
 // content pages and are already disallowed in robots.ts.
-const routes = ["", "/pricing", "/legal", "/terms", "/contact", "/medical-matching"];
+const routes = ["", "/service", "/legal", "/terms", "/contact", "/medical-matching"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => ({

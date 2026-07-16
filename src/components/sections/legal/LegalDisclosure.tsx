@@ -83,8 +83,8 @@ const facts: Fact[] = [
     value: (
       <>
         各プランの税込価格は、
-        <Link href="/pricing" className={linkClassName}>
-          サービス・料金ページ
+        <Link href="/service" className={linkClassName}>
+          サービスページ
         </Link>
         に記載のとおりです。
       </>
@@ -98,8 +98,8 @@ const facts: Fact[] = [
     value: (
       <>
         決済完了後、通常2営業日以内に担当者よりご連絡します。プランごとの詳細な提供時期は、
-        <Link href="/pricing" className={linkClassName}>
-          サービス・料金ページ
+        <Link href="/service" className={linkClassName}>
+          サービスページ
         </Link>
         の各プランをご確認ください。
       </>
@@ -110,8 +110,8 @@ const facts: Fact[] = [
     value: (
       <>
         サービスの性質上、提供開始後のキャンセルおよび返金は原則としてお受けできません。プランごとのキャンセル条件は、
-        <Link href="/pricing" className={linkClassName}>
-          サービス・料金ページ
+        <Link href="/service" className={linkClassName}>
+          サービスページ
         </Link>
         および
         <Link href="/terms" className={linkClassName}>

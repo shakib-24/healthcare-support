@@ -1,7 +1,7 @@
 /**
  * Centralized pricing data for Branch Healthcare Support.
  *
- * Shared by the homepage pricing preview and the full /pricing page so
+ * Shared by the checkout flow, contact form, and terms of service so
  * displayed prices and plan details never drift out of sync.
  */
 

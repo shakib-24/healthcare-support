@@ -27,8 +27,8 @@ export default function ContactPage() {
           <div className="flex flex-col gap-3 border-t border-border pt-6 text-sm text-muted-foreground">
             <p>お申し込み前に、以下のページもあわせてご確認ください。</p>
             <div className="flex flex-wrap gap-4">
-              <ButtonLink href="/pricing" variant="text">
-                サービス・料金
+              <ButtonLink href="/service" variant="text">
+                サービス
               </ButtonLink>
               <ButtonLink href="/terms" variant="text">
                 利用規約・プライバシーポリシー

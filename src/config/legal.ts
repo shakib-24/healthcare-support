@@ -1,7 +1,6 @@
 /**
- * Shared payment/fee disclosure wording used on both the pricing page
- * (PricingNotes) and the legal page (特定商取引法に基づく表記), so the two
- * never drift out of sync.
+ * Shared payment/fee disclosure wording used on the legal page
+ * (特定商取引法に基づく表記).
  */
 
 export const paymentMethodNotice = "クレジットカード決済";
